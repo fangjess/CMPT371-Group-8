@@ -2,6 +2,15 @@ import socket
 import threading
 import json
 
+# Player score tracking
+player_scores = {}
+
+
+# Add a new player to the lobby with score 0
+def add_player(new_player_id):
+    player_scores[new_player_id] = 0
+    print(f"Player {new_player_id} added to lobby with score 0")
+
 # TCP network setup
 SERVER_HOST = input("Enter server IP: ")
 SERVER_PORT = 5000
@@ -51,6 +60,10 @@ def listen_to_server():
                     x, y = msg["x"], msg["y"]
                     winner = msg["player_id"]
                     remove_coin(x, y, winner)
+                # New player joined the lobby
+                elif msg["type"] == "add_player":
+                    new_id = msg["player_id"]
+                    add_player(new_id)
         except:
             break
 
