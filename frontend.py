@@ -17,9 +17,12 @@ player_scores = {}
 local_player_id = None
 send_click_fn = None
 
-in_lobby = True #change to False if want to start in game screen
-players_ready = {}
+in_lobby = False #change to False if don't want to start in lobby screen
+players_ready = {} #list of player in lobby
 countdown_time = None
+in_win_screen = False #change to True if want to test win screen
+winner_id = "jojo" #winner displayed in win screen
+restart_clicked = False
 
 def update_coin_list(coin_data):
     coins.clear()
@@ -87,12 +90,42 @@ def start_countdown(seconds):
     countdown_time = seconds
 
 def switch_to_game_screen():
-    global in_lobby
+    global in_lobby, in_win_screen
     in_lobby = False
+    in_win_screen = False
+
+def switch_to_win_screen(winner):
+    global in_win_screen, in_lobby, winner_id, restart_clicked
+    in_win_screen = True
+    in_lobby = False
+    restart_clicked = False
+    winner_id = winner
+
+def draw_win_screen():
+    screen.fill((0, 0, 0))
+    if winner_id:
+        text = font.render(f"🏆 Winner: {winner_id}", True, (255, 255, 0))
+        screen.blit(text, (200, 150))
+
+    # Restart Button
+    if restart_clicked == False:
+        pygame.draw.rect(screen, (0, 128, 0), (200, 300, 100, 40))
+        restart_label = font.render("Restart", True, (255, 255, 255))
+        screen.blit(restart_label, (215, 310))
+    else:
+        pygame.draw.rect(screen, (0, 128, 0), (200, 300, 100, 40))
+        restart_label = font.render("Readied", True, (255, 255, 255))
+        screen.blit(restart_label, (215, 310))
+
+    # Exit Button
+    pygame.draw.rect(screen, (128, 0, 0), (320, 300, 100, 40))
+    exit_label = font.render("Exit", True, (255, 255, 255))
+    screen.blit(exit_label, (355, 310))
+
 
 
 def run_game(send_click, player_id):
-    global send_click_fn, local_player_id, in_lobby
+    global send_click_fn, local_player_id, in_lobby, in_win_screen, restart_clicked
     send_click_fn = send_click
     local_player_id = player_id
     ready_pressed = False
@@ -105,10 +138,19 @@ def run_game(send_click, player_id):
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mx, my = event.pos
-                if not in_lobby:
+                if not in_lobby and not in_win_screen:
                     gx, gy = mx // CELL_SIZE, my // CELL_SIZE
                     if (gx, gy) in coins and send_click_fn:
                         send_click_fn(gx, gy)
+                elif in_win_screen:
+                    if 200 <= mx <= 300 and 300 <= my <= 340 and restart_clicked == False:
+                        # Restart clicked
+                        restart_clicked = True
+                        # send_restart()  # <-- you implement in client later
+                        print("Restart clicked")
+                    elif 320 <= mx <= 420 and 300 <= my <= 340:
+                        pygame.quit()
+                        return
                 elif in_lobby and not ready_pressed:
                     # Check if Ready button is clicked
                     if 250 <= mx <= 350 and 300 <= my <= 340:
@@ -116,10 +158,12 @@ def run_game(send_click, player_id):
                         ready_pressed = True
 
         screen.fill((30, 30, 30))
-        if not in_lobby:
-            draw_game()
-        else:
+        if in_lobby:
             draw_lobby(ready_pressed)
+        elif in_win_screen:
+            draw_win_screen()
+        else:
+            draw_game()
 
         pygame.display.flip()
 
