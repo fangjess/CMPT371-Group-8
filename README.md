@@ -2,7 +2,7 @@
 
 ## Coin Clicker:
 Upon joining the game, players enter a lobby where they are required to 'ready up' before the game begins.
-Once the game begins, players compete to the collect the most coins until a target number of coins is reached. Coins spawn randomly and the first player to reach the target number of coins collected wins.
+Once the game begins, players compete to collect the most coins until a target number of coins is reached. Coins spawn randomly and the first player to reach the target number of coins collected wins.
 
 
 ## How to Run: 
