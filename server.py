@@ -28,7 +28,6 @@ def broadcast(message):
             print(f"Broadcast error: {e}")
 
 
-
 def reset_game_state():
     global coins, scores, game_started
     coins = set()
