@@ -18,7 +18,7 @@ local_player_id = None
 send_click_fn = None
 
 in_lobby = True #change to False if don't want to start in lobby screen
-in_win_screen = False #change to true if want to test win screen
+in_win_screen =False #change to true if want to test win screen
 restart_clicked = False
 winner_id = None #change winner_id if want to test the displayed name
 
@@ -126,7 +126,7 @@ def draw_win_screen():
     screen.blit(exit_label, exit_label_rect)
 
 
-def run_game(send_click, player_id):
+def run_game(send_click, player_id, send_ready=None):
     global send_click_fn, local_player_id, in_lobby, in_win_screen, restart_clicked
     send_click_fn = send_click
     local_player_id = player_id
@@ -156,7 +156,8 @@ def run_game(send_click, player_id):
 
                     if restart_rect.collidepoint(mx, my) and not restart_clicked:
                         restart_clicked = True
-                        # send_restart()  #Uncomment when implemented in client
+                        if send_ready:
+                            send_ready()
                         print("Restart clicked")
 
                     elif exit_rect.collidepoint(mx, my):
@@ -166,7 +167,8 @@ def run_game(send_click, player_id):
                 elif in_lobby and not ready_pressed:
                     # Check if Ready button is clicked
                     if WIDTH // 2 - 50 <= mx <= WIDTH // 2 + 50 and 300 <= my <= 340:
-                        # start_game #Uncomment when implemented in client
+                        if send_ready:
+                            send_ready() #start game
                         ready_pressed = True
 
         screen.fill((255, 255, 255))
