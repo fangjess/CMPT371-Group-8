@@ -1,8 +1,8 @@
 import pygame
 
-WIDTH, HEIGHT = 600, 600
+WIDTH, HEIGHT = 800, 600
 GRID_SIZE = 10
-CELL_SIZE = WIDTH // GRID_SIZE
+CELL_SIZE = 600 // GRID_SIZE
 FPS = 32
 
 pygame.init()
@@ -52,9 +52,11 @@ def draw_game():
         rect = pygame.Rect(x * CELL_SIZE + 10, y * CELL_SIZE + 10, CELL_SIZE - 20, CELL_SIZE - 20)
         pygame.draw.ellipse(screen, (255, 215, 0), rect)
 
+    title = font.render("FIRST TO 10 WINS", True, (0, 0, 0))
+    screen.blit(title, (610, 5))
     header = font.render("Players:", True, (0, 0, 0))
-    screen.blit(header, (610, 5))
-    y_offset = 5 + 30
+    screen.blit(header, (610, 30))
+    y_offset = 60
     for pid, score in player_scores.items():
         color = (0, 0, 0)
         text = font.render(f"{pid}: {score}", True, color)

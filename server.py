@@ -11,7 +11,7 @@ GRID_SIZE = 10
 
 # Game state
 clients = []
-coins = set((x, y) for x in range(GRID_SIZE) for y in range(GRID_SIZE))
+coins = set()
 lock = threading.Lock()
 player_map = {}  # conn: player_id
 scores = {}      # player_id: score
@@ -24,31 +24,35 @@ def broadcast(message):
     for client in clients:
         try:
             client.sendall(data)
-        except:
-            pass
-        
-# Randomly spawns coin and broadcasts it
+        except Exception as e:
+            print(f"Broadcast error: {e}")
 
-def coin_spawner ():
-    while True:
-        time.sleep(5) # adjust spawn rate
-        with lock:
-            if game_started and len(coins) < GRID_SIZE * GRID_SIZE:
-                x = random.randint(0, GRID_SIZE - 1)
-                y = random.randint(0, GRID_SIZE - 1)
-                if (x, y) not in coins:
-                    coins.add((x,y))
-                    broadcast({"type": "new_coin", "x": x, "y": y})
-                    
+
+
 def reset_game_state():
     global coins, scores, game_started
-    coins = set((x, y) for x in range(GRID_SIZE) for y in range(GRID_SIZE))
+    coins = set()
     for pid in scores:
         scores[pid] = 0
-        game_started = False
-        broadcast({"type": "coin_list", "coins": [{"x": x, "y": y} for x, y in coins]})
-        player_list = [{"player_id": pid, "score": scores[pid]} for pid in scores]
-        broadcast({"type": "player_list}", "players": player_list})
+    game_started = False
+    broadcast({"type": "coin_list", "coins": [{"x": x, "y": y} for x, y in coins]})
+    player_list = [{"player_id": pid, "score": scores[pid]} for pid in scores]
+    broadcast({"type": "player_list", "players": player_list})
+
+
+# spawn coins at random empty positions
+def coin_spawner():
+    while True:
+        time.sleep(1)
+        with lock:
+            if game_started and len(coins) < GRID_SIZE * GRID_SIZE:
+                available_positions = [(x, y) for x in range(GRID_SIZE) for y in range(GRID_SIZE) if (x, y) not in coins]
+                if available_positions:
+                    new_coin = random.choice(available_positions)
+                    coins.add(new_coin)
+                    coin_list = [{"x": x, "y": y} for x, y in coins]
+                    broadcast({"type": "coin_list", "coins": coin_list})
+
 
 # Handle a connecting client
 def handle_client(conn, addr):
@@ -115,7 +119,7 @@ def handle_client(conn, addr):
                             broadcast({"type": "start_game"})
                             
         except Exception as e:
-            print("Initial handsahek failed:", e)
+            print("Initial handshake failed:", e)
             return
         
         finally:
@@ -135,7 +139,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_sock:
     server_sock.bind((HOST, PORT))
     server_sock.listen()
     print(f"Server listening on {HOST}:{PORT}")
-    #threading.Thread(target=coin_spawner, daemon=True).start()  
+    threading.Thread(target=coin_spawner, daemon=True).start()  # New thread to constantly spawn coins
     while True:
         conn, addr = server_sock.accept()
         threading.Thread(target=handle_client, args=(conn, addr), daemon=True).start()

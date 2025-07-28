@@ -24,6 +24,7 @@ def send_ready():
     msg = {"type": "ready", "player_id": player_id}
     sock.sendall((json.dumps(msg) + '\n').encode())
 
+
 # Listen to server messages
 def listen_to_server():
     buffer = ""
@@ -58,6 +59,7 @@ def listen_to_server():
                         switch_to_game_screen()
         except:
             break
+
 
 # Start listening thread
 threading.Thread(target=listen_to_server, daemon=True).start()

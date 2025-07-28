@@ -9,7 +9,7 @@ Once the game begins, players compete to collect the most coins until a target n
 
 1. Run the server.py file
 
-2. Get the IP address of the computer that the server is being run on by putting the follow into your terminal:
+2. Get the IP address of the computer that the server is being run on by putting the following into your terminal:
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Windows:** `ipconfig | findstr /R "IPv4"`<br>
 
