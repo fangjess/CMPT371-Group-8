@@ -3,6 +3,10 @@
 ## Coin Clicker:
 Upon joining the game, players enter a lobby where they are required to 'ready up' before the game begins. Once the game begins, players compete to collect the most coins until a target number of coins is reached (default is 10). Coins spawn randomly and the first player to reach the target number of coins collected wins. Upon a player winning, all players will see a ‘win screen’ showing the ID of the player who won, and the option to either restart or exit the game.
 
+## Demo Video:
+
+[Link to Demo Video](https://youtu.be/Znxp-pH3EIM)
+
 
 ## How to Run: 
 
